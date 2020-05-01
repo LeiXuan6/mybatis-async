@@ -17,6 +17,7 @@ package com.gameart.async.core;
 
 import com.gameart.async.annotations.AsyncType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -28,20 +29,30 @@ import java.util.Arrays;
 public class DBTask {
     private Class mapperClazz;
     private Method method;
+    private Object object;
     private AsyncType type;
     private Object[] args;
 
-    public static DBTask valueOf(Class mapperClazz,Method method,AsyncType type,Object[] args){
+    public static DBTask valueOf(Class mapperClazz,Method method,Object obj,AsyncType type,Object[] args){
         DBTask dbTask = new DBTask();
         dbTask.mapperClazz = mapperClazz;
         dbTask.method = method;
+        dbTask.object = obj;
         dbTask.type = type;
         dbTask.args = args;
         return dbTask;
     }
 
+    Object invoke() throws InvocationTargetException, IllegalAccessException {
+        return method.invoke(object,args);
+    }
+
     public Object[] getArgs() {
         return args;
+    }
+
+    public Object getObject() {
+        return object;
     }
 
     public Class getMapperClazz() {

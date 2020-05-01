@@ -51,7 +51,7 @@
 		<appender-ref ref="BENCHMARK_FILE"></appender-ref>
 	</logger>
 
-	<root level="ERROR">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

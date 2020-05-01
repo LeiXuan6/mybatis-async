@@ -59,8 +59,8 @@ public class AsyncTaskExecutor {
 
     public void addTask(DBTask task) {
         taskQueue.add(task);
-        if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("异步队列添加了一个任务[{}]",task);
+        if(LOGGER.isInfoEnabled()){
+            LOGGER.info("异步队列添加了一个任务{}",task);
         }
     }
 
@@ -84,15 +84,10 @@ public class AsyncTaskExecutor {
                             break;
                         }
 
-                        Object bean = SpringContextHolder.getBean(dbTask.getMapperClazz());
-                        if (bean == null) {
-                            LOGGER.error("执行数据库异步操作失败，bean为null, class = ", dbTask.getMapperClazz());
-                            continue;
-                        }
 
-                        dbTask.getMethod().invoke(bean, dbTask.getArgs());
-                        if(LOGGER.isDebugEnabled()){
-                            LOGGER.debug("执行数据库异步任务[{}]成功",dbTask);
+                        dbTask.invoke();
+                        if(LOGGER.isInfoEnabled()){
+                            LOGGER.info("执行数据库异步任务[{}]成功",dbTask);
                         }
                         count++;
                     }

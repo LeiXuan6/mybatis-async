@@ -36,13 +36,13 @@ public class MapperInvoker {
     @RuntimeType
     public Object invoke(@Origin Method method, @AllArguments @RuntimeType Object[] args) throws Throwable {
         Class<?> mapperClazz = method.getDeclaringClass();
+        Object object = SpringContextHolder.getBean(mapperClazz);
         if(method.isAnnotationPresent(AsyncMethod.class)){
             AsyncMethod asyncMethodAnno = method.getAnnotation(AsyncMethod.class);
             AsyncTaskExecutor executor= MapperExecutorService.getExecutorWhenNullCreate(mapperClazz);
-            executor.addTask(DBTask.valueOf(mapperClazz,method,asyncMethodAnno.type(),args));
+            executor.addTask(DBTask.valueOf(mapperClazz,method,object,asyncMethodAnno.type(),args));
             return null;
         }else {
-            Object object = SpringContextHolder.getBean(mapperClazz);
             return method.invoke(object, args);
         }
     }

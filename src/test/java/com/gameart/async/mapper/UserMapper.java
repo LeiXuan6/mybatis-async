@@ -1,6 +1,5 @@
 package com.gameart.async.mapper;
 
-
 import com.gameart.async.annotations.AsyncMethod;
 import com.gameart.async.annotations.AsyncType;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,7 +14,8 @@ public interface UserMapper {
 
   com.gameart.async.domain.User getUser(String userId);
 
-//  @AsyncMethod(type = AsyncType.INSERT)
   int insert(@Param("userId") String userId, @Param("name") String name);
 
+  @AsyncMethod(type = AsyncType.UPDATE)
+  void update(@Param("userId") String userId,@Param("name")String name);
 }
