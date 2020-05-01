@@ -2,7 +2,7 @@
 mybatis-async,是封装了mybatis的异步框架。
 
 ## 逻辑图如下：
- ![image](https://github.com/LeiXuan6/mybatis-async/blob/master/img/mybatis.png)
+ ![image](https://github.com/LeiXuan6/mybatis-async/blob/master/img/mybatis-async.png)
 
 ### 工程依赖
 + Jdk 1.8
