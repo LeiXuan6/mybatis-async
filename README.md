@@ -11,41 +11,28 @@ mybatis-async,是封装了mybatis的异步框架。
 
 ### 调用示例
 + 实现规范
-
-   + AsyncMapper 注解, 让Mapper具有异步的能力
    + AsyncMethod 注解, 标记Mapper的某个方法是异步调用的
    + AsyncType   注解, 异步的类型
 
 + Mapper实现规范的示列
 
 ```
-@AsyncMapper
-public interface InfoMapper {
- 
-     @AsyncMethod(type = AsyncType.SELECT , id="listAll")
-     List<InfoDO> listAll();
- 
-     @AsyncMethod(type = AsyncType.INSERT,id="insert")
-     int insert(InfoDO infoDO);
- 
-     @AsyncMethod(type = AsyncType.UPDATE,id="update")
-     int update(InfoDO infoDO);
- 
-     @AsyncMethod(type = AsyncType.SELECT,id="query")
-     InfoDO query(@Param("id") Integer id);
- 
- }
+@Mapper
+public interface UserMapper {
 
+  com.gameart.async.domain.User getUser(String userId);
+
+  int insert(@Param("userId") String userId, @Param("name") String name);
+
+  @AsyncMethod(type = AsyncType.UPDATE)
+  void update(@Param("userId") String userId,@Param("name")String name);
+}
 
 ``` 
 
 + 异步任务提交示列
 ```
-     AsyncService.commitAsyncTask(SubjectMapper.class, "query", ParamBuilder.create().addInteger(1), new IAsyncListener() {
-                            @Override
-                            public void callBack(Object o) {
-                                System.out.println(o);
-                            }
-                        });
+     UserMapper userMapper = ProxyFactory.factory(UserMapper.class).newInstance();
+     userMapper.update(id, "proxy");
 ```
- + 具体列子参考TestInsert,TestQuery,TestUpdate
+ + 具体列子参考BasicTest,ProxyTest
