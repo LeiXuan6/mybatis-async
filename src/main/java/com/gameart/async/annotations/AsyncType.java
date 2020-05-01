@@ -8,5 +8,6 @@ package com.gameart.async.annotations;
 public enum AsyncType {
     SELECT,
     UPDATE,
-    INSERT
+    INSERT,
+    DELETE
 }

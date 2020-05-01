@@ -12,6 +12,4 @@ import java.lang.annotation.*;
 @Documented
 public @interface AsyncMethod {
     AsyncType type();
-
-    String id();
 }
