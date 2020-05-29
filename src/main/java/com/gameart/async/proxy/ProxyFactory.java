@@ -22,12 +22,16 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author JackLei
  * @version 2020-04-30
  */
 public class ProxyFactory<I> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyFactory.class);
+    private  final Map<Class,Object> CACHE_MAP = new ConcurrentHashMap<>();
     private final Class<I> interfaceClass;
 
     public ProxyFactory(Class<I> interfaceClass) {
@@ -40,6 +44,11 @@ public class ProxyFactory<I> {
     }
 
     public I newInstance(){
+        Object proxy = CACHE_MAP.get(interfaceClass);
+        if(proxy != null){
+            return (I) proxy;
+        }
+
         MapperInvoker handler = new MapperInvoker();
         Class<? extends I> cls = new ByteBuddy()
                 .subclass(interfaceClass)
@@ -50,7 +59,12 @@ public class ProxyFactory<I> {
                 .getLoaded();
 
         try {
-            return cls.newInstance();
+            proxy = cls.newInstance();
+            Object putIfAbsent = CACHE_MAP.putIfAbsent(interfaceClass, proxy);
+            if(putIfAbsent != null){
+                proxy = putIfAbsent;
+            }
+            return (I) proxy;
         } catch (Throwable t) {
             LOGGER.error("代理对象创建失败,class = {}",interfaceClass,t);
         }

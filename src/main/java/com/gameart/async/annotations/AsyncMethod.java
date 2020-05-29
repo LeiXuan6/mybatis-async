@@ -1,5 +1,7 @@
 package com.gameart.async.annotations;
 
+import com.gameart.async.constant.AsyncType;
+
 import java.lang.annotation.*;
 
 /***异步方法

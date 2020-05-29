@@ -15,7 +15,7 @@
  */
 package com.gameart.async.core;
 
-import com.gameart.async.annotations.AsyncType;
+import com.gameart.async.constant.AsyncType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

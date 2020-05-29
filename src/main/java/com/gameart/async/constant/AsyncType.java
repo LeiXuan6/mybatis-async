@@ -1,4 +1,4 @@
-package com.gameart.async.annotations;
+package com.gameart.async.constant;
 
 /***异步类型
  *@author JackLei

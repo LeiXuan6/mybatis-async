@@ -15,7 +15,6 @@
  */
 package com.gameart.async.core;
 
-import com.gameart.async.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <ul>
- * 任务生产/消费
+ * 任务执行器
  * <li>
  * 生产
  * <li>由上一层提交任务到{@link #taskQueue}</li>
@@ -40,13 +39,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author JackLei
  * @version 2020-04-30
  */
-public class AsyncTaskExecutor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncTaskExecutor.class);
+public class TaskExecutor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
     private AtomicBoolean executed = new AtomicBoolean(false);
     private ConcurrentLinkedQueue<DBTask> taskQueue = new ConcurrentLinkedQueue<>();
-    /**
-     * 一次消费任务的最大数量
-     */
+    /** 一次消费任务的最大数量 */
     private int threshold = 500;
     private ScheduledFuture scheduledFuture;
 
@@ -68,14 +65,12 @@ public class AsyncTaskExecutor {
 
         @Override
         public void run() {
-
             if (executed.compareAndSet(false, true)) {
-
                 try {
                     int count = 0;
                     for (; ; ) {
                         if (count >= threshold) {
-                            LOGGER.error("任务数量超出预期值，预期值 = {} ,队列剩余任务 = {}",threshold,taskQueue.size());
+                            LOGGER.error("任务数量超出预期值，预期值 = {} ,当前值 = {} ,队列剩余任务 = {}",threshold,count,taskQueue.size());
                             break;
                         }
 
@@ -83,7 +78,6 @@ public class AsyncTaskExecutor {
                         if (dbTask == null) {
                             break;
                         }
-
 
                         dbTask.invoke();
                         if(LOGGER.isInfoEnabled()){

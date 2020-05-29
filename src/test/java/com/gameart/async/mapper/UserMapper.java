@@ -1,7 +1,7 @@
 package com.gameart.async.mapper;
 
 import com.gameart.async.annotations.AsyncMethod;
-import com.gameart.async.annotations.AsyncType;
+import com.gameart.async.constant.AsyncType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

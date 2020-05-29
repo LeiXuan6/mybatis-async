@@ -18,23 +18,23 @@ package com.gameart.async.core;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ *任务执行服务组
  * @author JackLei
  * @version 2020-05-01
  */
-public class MapperExecutorService {
-    private static ConcurrentHashMap<Class,AsyncTaskExecutor> executorMap = new ConcurrentHashMap<>();
+public class TableExecutorService {
+    private ConcurrentHashMap<Object, TaskExecutor> executorMap = new ConcurrentHashMap<>();
 
-
-    public static AsyncTaskExecutor getExecutorWhenNullCreate(Class clazz){
-        AsyncTaskExecutor asyncTaskExecutor = executorMap.get(clazz);
+    public <T> TaskExecutor getExecutorWhenNullCreate(T executorType){
+        TaskExecutor asyncTaskExecutor = executorMap.get(executorType);
         if(asyncTaskExecutor == null){
-            asyncTaskExecutor = new AsyncTaskExecutor();
-            AsyncTaskExecutor putIfAbsent = executorMap.putIfAbsent(clazz, asyncTaskExecutor);
+            asyncTaskExecutor = new TaskExecutor();
+            TaskExecutor putIfAbsent = executorMap.putIfAbsent(executorType, asyncTaskExecutor);
             if(putIfAbsent != null){
                 asyncTaskExecutor = putIfAbsent;
+            }else {
+                asyncTaskExecutor.start();
             }
-            asyncTaskExecutor.start();
         }
         return asyncTaskExecutor;
     }

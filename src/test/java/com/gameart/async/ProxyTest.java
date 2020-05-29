@@ -18,10 +18,7 @@ package com.gameart.async;
 import com.gameart.async.core.AsyncThreadPool;
 import com.gameart.async.mapper.UserMapper;
 import com.gameart.async.proxy.ProxyFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.util.Random;
 
 /**
  * @author JackLei
@@ -30,14 +27,15 @@ import java.util.Random;
 public class ProxyTest {
 
     public static void main(String[] args) {
-        ApplicationContext  applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext-mybatis.xml");
+        new ClassPathXmlApplicationContext("classpath*:applicationContext-mybatis.xml");
         AsyncThreadPool.start();
-        UserMapper userMapper = ProxyFactory.factory(UserMapper.class).newInstance();
-        Random random = new Random();
-        String id = String.valueOf(random.nextInt(100_000));
-        int insert = userMapper.insert(id, "1");
-        userMapper.update(id, "proxy");
-    }
+        for(int i = 0 ; i < 1000; i ++) {
+            UserMapper userMapper = ProxyFactory.factory(UserMapper.class).newInstance();
 
+            String id = String.valueOf(i);
+            userMapper.insert(id, "1");
+            userMapper.update(id, "proxy");
+        }
+    }
 
 }

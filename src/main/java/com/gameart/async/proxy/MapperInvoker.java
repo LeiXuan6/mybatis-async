@@ -17,12 +17,13 @@ package com.gameart.async.proxy;
 
 import com.gameart.async.SpringContextHolder;
 import com.gameart.async.annotations.AsyncMethod;
-import com.gameart.async.core.AsyncTaskExecutor;
+import com.gameart.async.core.TaskExecutor;
 import com.gameart.async.core.DBTask;
-import com.gameart.async.core.MapperExecutorService;
+import com.gameart.async.core.TableExecutorService;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import org.apache.ibatis.reflection.ExceptionUtil;
 
 import java.lang.reflect.Method;
 
@@ -31,15 +32,29 @@ import java.lang.reflect.Method;
  * @author JackLei
  * @version 2020-04-30
  */
-public class MapperInvoker {
+public class MapperInvoker<T> {
+    /** 执行器类型 */
+    private  T executorType;
+
+    public MapperInvoker(T executorType) {
+        this.executorType = executorType;
+    }
 
     @RuntimeType
     public Object invoke(@Origin Method method, @AllArguments @RuntimeType Object[] args) throws Throwable {
+        if (Object.class.equals(method.getDeclaringClass())) {
+            try {
+                return method.invoke(this, args);
+            } catch (Throwable t) {
+                throw ExceptionUtil.unwrapThrowable(t);
+            }
+        }
+
         Class<?> mapperClazz = method.getDeclaringClass();
         Object object = SpringContextHolder.getBean(mapperClazz);
         if(method.isAnnotationPresent(AsyncMethod.class)){
             AsyncMethod asyncMethodAnno = method.getAnnotation(AsyncMethod.class);
-            AsyncTaskExecutor executor= MapperExecutorService.getExecutorWhenNullCreate(mapperClazz);
+            TaskExecutor executor= TableExecutorService.getExecutorWhenNullCreate(executorType);
             executor.addTask(DBTask.valueOf(mapperClazz,method,object,asyncMethodAnno.type(),args));
             return null;
         }else {
